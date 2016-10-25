@@ -1,0 +1,47 @@
+{{extend 'layout.html'}}
+
+<div class = "text_right">
+        <a href="{{=URL('default', 'google')}}" class="btn btn-warning">
+            <i class="fa fa-plus"></i> Google maps
+        </a>
+    </div>
+
+<div class="post_listing center">
+{{if auth.user_id:}}
+
+    <div class="post_list_header text-right">
+        <a href="{{=URL('default', 'edit')}}" class="btn btn-warning">
+            <i class="fa fa-plus"></i> New Post
+        </a>
+    </div>
+
+{{else:}}
+
+    <h1 class="main_title text-center">Welcome!</h1>
+    <p class="explanation text-center">This site will help you organize your life by storing your checklists.
+        Please log in to use it.</p>
+    <div class="login_button text-center">
+        <a href="{{=URL('default', 'user', args=['login'])}}" class="btn btn-warning">Login</a>
+    </div>
+{{pass}}
+
+      <div class="post_list">
+    {{for p in posts:}}
+        <div class="post text-left">
+            <!-- Here goes the code to display an individual post. The code below is just a placeholder. -->
+            {{=p.post_content}}
+            <div class="post_name">
+            <h>This post is created on  ({{=p.created_on}})</h>
+            <h2 style="font-size:10px">which created by {{=names(p.user_email)}}</h2>
+            ,and this post is updated on  ({{=p.updated_on}})
+            </div>
+         <div class="post_edit text-left">
+         {{if auth.user_id is not None:}}
+             {{if p.user_email == auth.user.email:}} <a href="{{=URL('default', 'edit',args=[p.id])}}" class="btn btn-info">Edit</a>
+             {{pass}}
+        {{pass}}
+        </div>
+     </div>
+    {{pass}}
+    </div>
+</div>

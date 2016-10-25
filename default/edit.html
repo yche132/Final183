@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+{{extend 'layout.html'}}
+
+<div class="post_list_header text-center">
+        <h1 style="font-size:40px"><b >Content :</b></h1>
+</div>
+
+
+<div class="mycontent">
+
+    <div class="button_list">
+      {{for b in button_list:}}
+        <div class="top_button">{{=b}}</div>
+    {{pass}}
+    </div>
+    {{=form}}
+
+</div>
+
+
