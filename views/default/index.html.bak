@@ -1,0 +1,184 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<style>
+/* this part is for the subwindow and its animation */
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.8); /* Black w/ opacity */
+}
+
+/* Modal Content (image) */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+}
+
+/* Caption of Modal Image */
+#caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    height: 150px;
+}
+
+/* Add Animation */
+.modal-content, #caption {    
+    -webkit-animation-name: zoom;
+    -webkit-animation-duration: 0.6s;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+    from {transform:scale(0)} 
+    to {transform:scale(1)}
+}
+
+@keyframes zoom {
+    from {transform:scale(0.1)} 
+    to {transform:scale(1)}
+}
+
+/* The Close Button */
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+</style>
+
+
+
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var posts_url = "{{=URL('api', 'get_posts')}}";
+    var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
+    var del_post_url = "{{=URL('api', 'del_post', user_signature=True)}}";
+    var update_post_url = "{{=URL('api', 'update_post', user_signature=True)}}";
+</script>
+{{end}}
+
+<div class="main_content">
+    <h1><center>Start here</center></h1>
+    
+{{=form}}
+<hr />
+{{=results}}
+    
+    <div id="vue-div" class="display:none">
+        <!-- Creating post -->
+        <div id="create_post" v-if="logged_in">
+            <div id="newpost">
+                <button class="btn btn-primary" v-on:click="add_post_button()"><i class="fa fa-plus" aria-hidden="true"></i> Add new trip</button>
+            </div>
+
+            <div id="adding_post" v-if="is_adding_post">
+                <textarea id="post-content-textarea" v-model="post_content" class="form-control" rows="3" placeholder="Place Text Here"></textarea>
+
+                <button id="add-new-post" class="post-button" v-on:click="add_post()">
+                    Post
+                </button>
+
+                <button id="cancel_post" class="cancel-button" v-on:click="cancel_post_button()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+        <!-- Post List -->
+        <div class="result_post">
+            <div v-for="post in posts" class="post">
+                <div class="!post-content">
+                    <div v-if="!post.post_edit">
+                        <div class="post_upper">
+                            <span id="post-text">
+                                ${post.post_content}
+                            </span>
+
+                            <span id="edit-btn" v-if="post.upost" v-on:click="edit_post(post)">
+                                <i class="fa fa-pencil"></i>
+                                <!-- {{=icon_edit}} not working for some reason when the icon is fa fa-pencil-o -->
+                            </span>
+                        </div>
+
+                        <div class="post_lower">
+                            <span id="username">
+                                ${post.username}
+                            </span>
+
+                            &nbsp
+
+                            <span id="created_time">
+                                ${post.created_on}
+                            </span>
+
+                            &nbsp
+
+                            <span id="updated_time" v-if="post.updated_on != post.created_on">
+                                Updated on: ${post.updated_on}
+                            </span>
+
+                            &nbsp
+
+                            <span id="delete-btn" v-if="post.upost" v-on:click="delete_post(post.id, post.user_email)">
+                                {{=icon_delete}}
+                            </span>
+
+                        </div>
+                    </div>
+
+                    <div v-if="post.post_edit">
+                        <textarea id="post-edit-textarea" v-model="post_edit_content" class="form-control" rows="2"></textarea>
+                        <button id="edit-old-post" class="post-button" v-on:click="update_post(post)">
+                            Post
+                        </button>
+
+                        <button id="cancel_post" class="cancel-button" v-on:click="cancel_editing(post)">
+                            Cancel
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="has_more" class="show_more">
+                <button id="load-more" v-on:click="get_more()">Load More</button> <br>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<script src="{{=URL('static', 'js/default_index.js')}}"></script>
